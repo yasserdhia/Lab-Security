@@ -19,7 +19,12 @@ export async function POST(request: NextRequest) {
     console.log('Executing query:', vulnerableQuery);
 
     try {
+      // Test basic connection first
+      await pool.query('SELECT 1');
+      console.log('Database connection test successful');
+      
       const result = await pool.query(vulnerableQuery);
+      console.log('Query result:', result.rows);
       const count = parseInt(result.rows[0].count);
       
       if (count > 0) {
@@ -49,6 +54,7 @@ export async function POST(request: NextRequest) {
         });
       }
     } catch (dbError: any) {
+      console.error('Database error:', dbError);
       // Even errors are hidden in true blind injection
       // But we'll show minimal info for educational purposes
       return NextResponse.json({
@@ -64,6 +70,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error: any) {
+    console.error('Server error:', error);
     return NextResponse.json({
       success: false,
       message: 'System temporarily unavailable'

@@ -15,6 +15,10 @@ export async function POST(request: NextRequest) {
     // INTENTIONALLY VULNERABLE: Second-order injection
     // First, store the potentially malicious data
     try {
+      // Test basic connection first
+      await pool.query('SELECT 1');
+      console.log('Database connection test successful');
+      
       // Store user input (first order)
       const insertQuery = `INSERT INTO logs (user_id, action, details) VALUES (1, 'login_attempt', '{"username": "${username}", "password": "${password}"}')`;
       await pool.query(insertQuery);
@@ -25,6 +29,7 @@ export async function POST(request: NextRequest) {
       console.log('Second-order query:', selectQuery);
       
       const result = await pool.query(selectQuery);
+      console.log('Query result:', result.rows);
       
       if (result.rows.length > 0) {
         return NextResponse.json({
@@ -50,6 +55,7 @@ export async function POST(request: NextRequest) {
         });
       }
     } catch (dbError: any) {
+      console.error('Database error:', dbError);
       return NextResponse.json({
         success: false,
         error: 'Database error in second-order execution',
@@ -62,6 +68,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error: any) {
+    console.error('Server error:', error);
     return NextResponse.json({
       success: false,
       error: 'Server error occurred',

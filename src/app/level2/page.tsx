@@ -24,11 +24,13 @@ export default function Level2() {
   };
 
   const hints = [
-    "This level uses numeric fields in the SQL query",
+    "This level accepts both username and numeric User ID",
+    "For valid login: admin/admin123 OR use ID: 1/admin123",
     "User ID is passed as a number without quotes",
     "Try using numeric payloads like: 1 OR 1=1",
     "No quotes are needed for numeric injection",
-    "You can use UNION SELECT to extract additional data"
+    "You can use UNION SELECT to extract additional data",
+    "Example: Enter '1' as username to use numeric injection"
   ];
 
   return (

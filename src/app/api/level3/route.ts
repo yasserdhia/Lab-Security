@@ -19,7 +19,12 @@ export async function POST(request: NextRequest) {
     console.log('Executing query:', vulnerableQuery);
 
     try {
+      // Test basic connection first
+      await pool.query('SELECT 1');
+      console.log('Database connection test successful');
+      
       const result = await pool.query(vulnerableQuery);
+      console.log('Query result:', result.rows);
       
       if (result.rows.length > 0) {
         const users = result.rows;
@@ -57,6 +62,7 @@ export async function POST(request: NextRequest) {
         });
       }
     } catch (dbError: any) {
+      console.error('Database error:', dbError);
       return NextResponse.json({
         success: false,
         error: 'Database error occurred',
@@ -74,6 +80,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error: any) {
+    console.error('Server error:', error);
     return NextResponse.json({
       success: false,
       error: 'Server error occurred',

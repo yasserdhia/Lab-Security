@@ -13,14 +13,27 @@ export async function POST(request: NextRequest) {
     }
 
     // INTENTIONALLY VULNERABLE: Numeric injection
-    // Treat username as user ID (numeric)
-    const userId = username; // Directly use input as number
-    const vulnerableQuery = `SELECT id, username, email, first_name, last_name, role FROM users WHERE id = ${userId} AND password = '${password}'`;
+    // Support both username and user ID approaches
+    let vulnerableQuery;
+    
+    // If username is numeric, treat as ID
+    if (!isNaN(Number(username))) {
+      const userId = username;
+      vulnerableQuery = `SELECT id, username, email, first_name, last_name, role FROM users WHERE id = ${userId} AND password = '${password}'`;
+    } else {
+      // If username is string, also allow username-based login for convenience
+      vulnerableQuery = `SELECT id, username, email, first_name, last_name, role FROM users WHERE username = '${username}' AND password = '${password}'`;
+    }
 
     console.log('Executing query:', vulnerableQuery);
 
     try {
+      // Test basic connection first
+      await pool.query('SELECT 1');
+      console.log('Database connection test successful');
+      
       const result = await pool.query(vulnerableQuery);
+      console.log('Query result:', result.rows);
       
       if (result.rows.length > 0) {
         const users = result.rows;
@@ -46,6 +59,7 @@ export async function POST(request: NextRequest) {
         });
       }
     } catch (dbError: any) {
+      console.error('Database error:', dbError);
       return NextResponse.json({
         success: false,
         error: 'Database error occurred',
@@ -58,6 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error: any) {
+    console.error('Server error:', error);
     return NextResponse.json({
       success: false,
       error: 'Server error occurred',
