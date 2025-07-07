@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # SonarQube Database
+  sonarqube-db:
+    image: postgres:15
+    container_name: sonarqube-postgres
+    environment:
+      POSTGRES_DB: sonarqube
+      POSTGRES_USER: sonarqube
+      POSTGRES_PASSWORD: sonarqube123
+    volumes:
+      - sonarqube_db:/var/lib/postgresql/data
+    networks:
+      - sonarqube-network
+    restart: unless-stopped
+
+  # SonarQube Server
+  sonarqube:
+    image: sonarqube:10.3-community
+    container_name: sonarqube-server
+    depends_on:
+      - sonarqube-db
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://sonarqube-db:5432/sonarqube
+      SONAR_JDBC_USERNAME: sonarqube
+      SONAR_JDBC_PASSWORD: sonarqube123
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: true
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    ports:
+      - "9000:9000"
+    networks:
+      - sonarqube-network
+    restart: unless-stopped
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+
+volumes:
+  sonarqube_db:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
+
+networks:
+  sonarqube-network:
+    driver: bridge

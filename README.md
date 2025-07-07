@@ -192,6 +192,28 @@ npm run dev
 # Access at http://localhost:3000
 ```
 
+## 🔍 Security Analysis with SonarQube
+
+This project includes **SonarQube integration** for comprehensive security scanning:
+
+### Quick Start with SonarQube:
+```bash
+# Start SonarQube
+docker-compose -f docker-compose.sonarqube.yml up -d
+
+# Install SonarQube Scanner
+npm install -g sonarqube-scanner
+
+# Run security analysis
+run-sonar-scan.bat
+```
+
+**SonarQube Dashboard**: http://localhost:9000
+- **Login**: admin / admin (change on first login)
+- **Expected Results**: The scanner will detect intentional vulnerabilities for educational purposes
+
+📋 **Detailed Guide**: See `SONARQUBE_QUICKSTART.md` for step-by-step instructions.
+
 ## 🛡️ Security Note
 
 This application contains **intentional vulnerabilities** for educational purposes. Never deploy in production. Always use parameterized queries, input validation, and proper security practices in real applications.

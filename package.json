@@ -15,7 +15,11 @@
     "docker:dev-down": "docker-compose -f docker-compose.dev.yml down",
     "db:init": "docker exec -i sqli-lab-db psql -U postgres -d sqli_lab < database/init.sql",
     "db:setup": "docker run -d --name sqli-lab-db -e POSTGRES_DB=sqli_lab -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -p 5432:5432 postgres:15",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "sonarqube:start": "docker-compose -f docker-compose.sonarqube.yml up -d",
+    "sonarqube:stop": "docker-compose -f docker-compose.sonarqube.yml down",
+    "sonarqube:scan": "sonar-scanner",
+    "security:scan": "npm run sonarqube:scan"
   },
   "dependencies": {
     "next": "^14.2.0",
