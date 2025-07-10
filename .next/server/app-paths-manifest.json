@@ -1,7 +1,1 @@
-{
-  "/_not-found/page": "app/_not-found/page.js",
-  "/page": "app/page.js",
-  "/level1/page": "app/level1/page.js",
-  "/level2/page": "app/level2/page.js",
-  "/api/level1/route": "app/api/level1/route.js"
-}
+{}

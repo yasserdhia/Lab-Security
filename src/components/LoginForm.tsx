@@ -28,6 +28,23 @@ export default function LoginForm({
   const [loading, setLoading] = useState(false);
   const [showHints, setShowHints] = useState(false);
   const [showPayloads, setShowPayloads] = useState(false);
+  const [editingPayload, setEditingPayload] = useState<number | null>(null);
+  const [newPayload, setNewPayload] = useState('');
+  const [showPayloadManager, setShowPayloadManager] = useState(false);
+  const [editingPayloadValue, setEditingPayloadValue] = useState('');
+
+  // Initialize payloads state with default common payloads
+  const [commonPayloads, setCommonPayloads] = useState([
+    "' OR '1'='1' --",
+    "' OR 1=1 --",
+    "admin' --",
+    "' UNION SELECT username, password FROM users --",
+    "' OR username='admin' --",
+    "1' OR '1'='1",
+    "'; DROP TABLE users; --",
+    "' OR SLEEP(5) --",
+    "' UNION SELECT 1, table_name, null, null, null, null FROM information_schema.tables WHERE table_schema='public' LIMIT 1 OFFSET 0--",
+  ]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,17 +64,37 @@ export default function LoginForm({
     }
   };
 
-  const commonPayloads = [
-    "' OR '1'='1' --",
-    "' OR 1=1 --",
-    "admin' --",
-    "' UNION SELECT username, password FROM users --",
-    "' OR username='admin' --",
-    "1' OR '1'='1",
-    "'; DROP TABLE users; --",
-    "' OR SLEEP(5) --",
-    "' UNION SELECT 1, table_name, null, null, null, null FROM information_schema.tables WHERE table_schema='public' LIMIT 1 OFFSET 0--",
-  ];
+  // Payload management functions
+  const addPayload = () => {
+    if (newPayload.trim() && !commonPayloads.includes(newPayload.trim())) {
+      setCommonPayloads([...commonPayloads, newPayload.trim()]);
+      setNewPayload('');
+    }
+  };
+
+  const deletePayload = (index: number) => {
+    setCommonPayloads(commonPayloads.filter((_, i) => i !== index));
+  };
+
+  const startEditPayload = (index: number) => {
+    setEditingPayload(index);
+    setEditingPayloadValue(commonPayloads[index]);
+  };
+
+  const saveEditPayload = () => {
+    if (editingPayload !== null && editingPayloadValue.trim()) {
+      const updatedPayloads = [...commonPayloads];
+      updatedPayloads[editingPayload] = editingPayloadValue.trim();
+      setCommonPayloads(updatedPayloads);
+      setEditingPayload(null);
+      setEditingPayloadValue('');
+    }
+  };
+
+  const cancelEditPayload = () => {
+    setEditingPayload(null);
+    setEditingPayloadValue('');
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -182,31 +219,133 @@ export default function LoginForm({
             <div className="vulnerability-card rounded-lg p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-semibold text-cyber-purple">🎯 Common Payloads</h3>
-                <button
-                  onClick={() => setShowPayloads(!showPayloads)}
-                  className="text-cyber-blue hover:text-cyber-purple transition-colors duration-300"
-                >
-                  {showPayloads ? 'Hide' : 'Show'} Payloads
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowPayloadManager(!showPayloadManager)}
+                    className="text-xs px-3 py-1 bg-cyber-purple/20 text-cyber-purple hover:bg-cyber-purple/30 rounded transition-colors duration-300"
+                  >
+                    {showPayloadManager ? 'Hide' : 'Manage'}
+                  </button>
+                  <button
+                    onClick={() => setShowPayloads(!showPayloads)}
+                    className="text-cyber-blue hover:text-cyber-purple transition-colors duration-300"
+                  >
+                    {showPayloads ? 'Hide' : 'Show'} Payloads
+                  </button>
+                </div>
               </div>
               
               {showPayloads && (
-                <div className="space-y-2">
-                  {commonPayloads.map((payload, index) => (
-                    <div 
-                      key={index}
-                      className="code-block text-sm cursor-pointer hover:bg-gray-800/50 transition-colors duration-300"
-                      onClick={() => {
-                        setCredentials({ ...credentials, username: payload, password: 'anything' });
-                      }}
-                      title="Click to use this payload"
-                    >
-                      {payload}
+                <div className="space-y-3">
+                  {/* Payload List */}
+                  <div className="space-y-2">
+                    {commonPayloads.map((payload, index) => (
+                      <div key={index} className="flex items-center gap-2 group">
+                        {editingPayload === index ? (
+                          <div className="flex-1 flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={editingPayloadValue}
+                              onChange={(e) => setEditingPayloadValue(e.target.value)}
+                              className="flex-1 px-2 py-1 text-xs bg-black/50 border border-cyber-purple/30 rounded 
+                                       text-white focus:border-cyber-purple focus:outline-none"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') saveEditPayload();
+                                if (e.key === 'Escape') cancelEditPayload();
+                              }}
+                              autoFocus
+                            />
+                            <button
+                              onClick={saveEditPayload}
+                              className="text-cyber-green hover:text-green-400 text-xs px-2 py-1"
+                              title="Save (Enter)"
+                            >
+                              ✓
+                            </button>
+                            <button
+                              onClick={cancelEditPayload}
+                              className="text-cyber-red hover:text-red-400 text-xs px-2 py-1"
+                              title="Cancel (Escape)"
+                            >
+                              ✗
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <div 
+                              className="flex-1 code-block text-sm cursor-pointer hover:bg-gray-800/50 transition-colors duration-300"
+                              onClick={() => {
+                                setCredentials({ ...credentials, username: payload, password: 'anything' });
+                              }}
+                              title="Click to use this payload"
+                            >
+                              {payload}
+                            </div>
+                            {showPayloadManager && (
+                              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <button
+                                  onClick={() => startEditPayload(index)}
+                                  className="text-cyber-blue hover:text-blue-400 text-xs px-2 py-1"
+                                  title="Edit payload"
+                                >
+                                  ✏️
+                                </button>
+                                <button
+                                  onClick={() => deletePayload(index)}
+                                  className="text-cyber-red hover:text-red-400 text-xs px-2 py-1"
+                                  title="Delete payload"
+                                >
+                                  🗑️
+                                </button>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add New Payload */}
+                  {showPayloadManager && (
+                    <div className="mt-4 p-4 bg-black/30 rounded border border-cyber-purple/30">
+                      <h4 className="text-sm font-semibold text-cyber-purple mb-3">Add New Payload</h4>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={newPayload}
+                          onChange={(e) => setNewPayload(e.target.value)}
+                          placeholder="Enter new SQL injection payload..."
+                          className="flex-1 px-3 py-2 text-sm bg-black/50 border border-cyber-purple/30 rounded 
+                                   text-white placeholder-gray-500 focus:border-cyber-purple focus:outline-none
+                                   focus:ring-2 focus:ring-cyber-purple/20"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') addPayload();
+                          }}
+                        />
+                        <button
+                          onClick={addPayload}
+                          disabled={!newPayload.trim() || commonPayloads.includes(newPayload.trim())}
+                          className="px-4 py-2 bg-cyber-purple/20 text-cyber-purple hover:bg-cyber-purple/30 
+                                   rounded text-sm transition-colors duration-300 disabled:opacity-50 
+                                   disabled:cursor-not-allowed"
+                        >
+                          Add
+                        </button>
+                      </div>
+                      {newPayload.trim() && commonPayloads.includes(newPayload.trim()) && (
+                        <p className="text-xs text-cyber-red mt-2">This payload already exists</p>
+                      )}
                     </div>
-                  ))}
-                  <p className="text-xs text-gray-500 mt-3">
-                    💡 Click on any payload to automatically fill the username field
-                  </p>
+                  )}
+
+                  {/* Help Text */}
+                  <div className="text-xs text-gray-500 mt-3 space-y-1">
+                    <p>💡 Click on any payload to automatically fill the username field</p>
+                    {showPayloadManager && (
+                      <p>🔧 Hover over payloads to see edit/delete options</p>
+                    )}
+                    <p className="text-cyber-purple">📊 Total payloads: {commonPayloads.length}</p>
+                  </div>
                 </div>
               )}
             </div>

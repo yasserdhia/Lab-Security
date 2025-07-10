@@ -17,6 +17,7 @@ This project is designed **exclusively for educational and authorized penetratio
 
 - **8 Progressive Difficulty Levels** - From beginner to expert
 - **1 Impossible Level** - Maximum security demonstration
+- **Interactive Payload Management** - Add, edit, delete, and use SQL injection payloads
 - **Real Database Integration** - PostgreSQL with realistic data
 - **Modern UI/UX** - Cyberpunk-themed interface with animations
 - **Educational Content** - Detailed explanations and prevention methods
@@ -169,9 +170,31 @@ npm run db:init
 1. **Visit the home page** at `http://localhost:3000`
 2. **Choose your starting level** (recommend Level 1 for beginners)
 3. **Read the level description** and hints carefully
-4. **Try different payloads** in the login form
+4. **Use the interactive payload manager** to test different SQL injection payloads
 5. **Analyze the responses** to understand the vulnerability
 6. **Progress through levels** as you master each technique
+
+### 🎯 Interactive Payload Management
+
+Each level now includes a powerful payload management system:
+
+#### **View & Use Payloads**
+- Click "Show Payloads" to see all available SQL injection payloads
+- Click any payload to automatically fill the username field
+- Perfect for quick testing and learning
+
+#### **Manage Your Payloads**
+- Click "Manage" to enable advanced payload management
+- **Add**: Create custom payloads for specific scenarios
+- **Edit**: Modify existing payloads with inline editing
+- **Delete**: Remove payloads you don't need
+- **Hover Effects**: Edit/delete options appear on hover
+
+#### **Features**
+- **Duplicate Prevention**: Can't add the same payload twice
+- **Real-time Validation**: Immediate feedback on payload status
+- **Keyboard Shortcuts**: Enter to save, Escape to cancel
+- **Session Persistence**: Changes persist during your session
 
 ### Common Payloads to Try
 
