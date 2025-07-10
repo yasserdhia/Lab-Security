@@ -14,23 +14,39 @@ The SQL Injection Lab now includes an interactive payload management system that
 - Click "Manage" to enable payload management mode
 - Hover over any payload to see edit and delete options
 - Management options appear as small icons (✏️ for edit, 🗑️ for delete)
+- Reset button appears to restore default payloads
 
 ### 3. **Add New Payloads**
 - When in management mode, use the "Add New Payload" section
 - Type your custom SQL injection payload in the input field
 - Press Enter or click "Add" to add the payload
 - Duplicate payloads are automatically prevented
+- **New payloads are automatically saved to your browser!**
 
 ### 4. **Edit Existing Payloads**
 - Click the edit icon (✏️) next to any payload
 - The payload becomes editable in an input field
 - Press Enter to save or Escape to cancel
 - Use the ✓ and ✗ buttons to save or cancel changes
+- **Edits are automatically saved to your browser!**
 
 ### 5. **Delete Payloads**
 - Click the delete icon (🗑️) next to any payload
 - The payload is immediately removed from the list
 - No confirmation dialog (be careful!)
+- **Deletions are automatically saved to your browser!**
+
+### 6. **🆕 Persistent Storage**
+- All changes are automatically saved to your browser's localStorage
+- Payloads persist across page refreshes and browser sessions
+- Changes are maintained when navigating between levels
+- Your custom payloads will be available until you clear browser data
+
+### 7. **🆕 Reset Functionality**
+- Click the "Reset" button (appears when in manage mode)
+- Instantly restores all payloads to factory defaults
+- Clears your custom additions and modifications
+- Useful for starting fresh or undoing unwanted changes
 
 ## Default Payloads Included
 
@@ -147,6 +163,56 @@ admin' --
 - Payload changes persist during your session
 - Refresh the page to reset to default payloads
 - Consider saving important custom payloads externally
+
+## 🆕 Data Persistence & Management
+
+### Automatic Saving
+- **localStorage Integration**: All payload modifications are automatically saved to your browser's localStorage
+- **Cross-Session Persistence**: Your custom payloads remain available even after:
+  - Page refreshes (F5, Ctrl+F5)
+  - Browser restarts
+  - Navigating between different levels
+  - Computer restarts (until browser data is cleared)
+
+### Storage Details
+- **Storage Key**: `sql-injection-payloads`
+- **Storage Type**: Browser localStorage (client-side only)
+- **Data Format**: JSON array of payload strings
+- **Size Limit**: ~5-10MB (depends on browser)
+
+### Managing Your Data
+
+#### Viewing Stored Data
+You can inspect your saved payloads using browser DevTools:
+1. Press `F12` to open DevTools
+2. Go to `Application` tab
+3. Navigate to `Local Storage` → `http://localhost:3000`
+4. Look for the key `sql-injection-payloads`
+
+#### Backing Up Your Payloads
+```javascript
+// Run this in browser console to export your payloads
+const payloads = localStorage.getItem('sql-injection-payloads');
+console.log(payloads); // Copy this output to save externally
+```
+
+#### Restoring Payloads
+```javascript
+// Run this in browser console to import payloads
+const myPayloads = ['payload1', 'payload2', '...']; // Your payload array
+localStorage.setItem('sql-injection-payloads', JSON.stringify(myPayloads));
+location.reload(); // Refresh to see changes
+```
+
+#### Manual Reset Options
+1. **UI Reset**: Use the "Reset" button in the payload manager
+2. **Browser Reset**: Clear browser data for the site
+3. **Console Reset**: Run `localStorage.removeItem('sql-injection-payloads')` in browser console
+
+### Data Privacy & Security
+- **Local Only**: Data is stored only in your browser, never sent to servers
+- **No Cross-Device Sync**: Payloads don't sync across different devices/browsers
+- **Privacy-Safe**: No personal data is collected or stored
 
 ## Security Warning
 ⚠️ **Important**: Only use these payloads in controlled environments like this lab. Using SQL injection payloads against systems you don't own or don't have permission to test is illegal and unethical.

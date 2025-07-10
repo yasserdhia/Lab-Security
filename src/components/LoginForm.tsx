@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LoginCredentials, ApiResponse } from '@/types';
 
 interface LoginFormProps {
@@ -33,8 +33,8 @@ export default function LoginForm({
   const [showPayloadManager, setShowPayloadManager] = useState(false);
   const [editingPayloadValue, setEditingPayloadValue] = useState('');
 
-  // Initialize payloads state with default common payloads
-  const [commonPayloads, setCommonPayloads] = useState([
+  // Default payloads that come with the lab
+  const defaultPayloads = [
     "' OR '1'='1' --",
     "' OR 1=1 --",
     "admin' --",
@@ -44,7 +44,47 @@ export default function LoginForm({
     "'; DROP TABLE users; --",
     "' OR SLEEP(5) --",
     "' UNION SELECT 1, table_name, null, null, null, null FROM information_schema.tables WHERE table_schema='public' LIMIT 1 OFFSET 0--",
-  ]);
+  ];
+
+  // Initialize payloads state - will be loaded from localStorage or use defaults
+  const [commonPayloads, setCommonPayloads] = useState<string[]>([]);
+
+  // Load payloads from localStorage on component mount
+  useEffect(() => {
+    const loadPayloads = () => {
+      try {
+        if (typeof window !== 'undefined') {
+          const savedPayloads = localStorage.getItem('sql-injection-payloads');
+          if (savedPayloads) {
+            const parsed = JSON.parse(savedPayloads);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setCommonPayloads(parsed);
+              return;
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to load payloads from localStorage:', error);
+      }
+      // If no saved payloads or error, use defaults
+      setCommonPayloads(defaultPayloads);
+    };
+
+    loadPayloads();
+  }, []);
+
+  // Save payloads to localStorage whenever they change
+  useEffect(() => {
+    if (commonPayloads.length > 0) {
+      try {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('sql-injection-payloads', JSON.stringify(commonPayloads));
+        }
+      } catch (error) {
+        console.warn('Failed to save payloads to localStorage:', error);
+      }
+    }
+  }, [commonPayloads]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,6 +134,18 @@ export default function LoginForm({
   const cancelEditPayload = () => {
     setEditingPayload(null);
     setEditingPayloadValue('');
+  };
+
+  const resetPayloads = () => {
+    setCommonPayloads(defaultPayloads);
+    // Clear localStorage to force reset
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('sql-injection-payloads');
+      }
+    } catch (error) {
+      console.warn('Failed to clear payloads from localStorage:', error);
+    }
   };
 
   return (
@@ -220,6 +272,15 @@ export default function LoginForm({
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-semibold text-cyber-purple">🎯 Common Payloads</h3>
                 <div className="flex gap-2">
+                  {showPayloadManager && (
+                    <button
+                      onClick={resetPayloads}
+                      className="text-xs px-3 py-1 bg-cyber-red/20 text-cyber-red hover:bg-cyber-red/30 rounded transition-colors duration-300"
+                      title="Reset to default payloads"
+                    >
+                      Reset
+                    </button>
+                  )}
                   <button
                     onClick={() => setShowPayloadManager(!showPayloadManager)}
                     className="text-xs px-3 py-1 bg-cyber-purple/20 text-cyber-purple hover:bg-cyber-purple/30 rounded transition-colors duration-300"
@@ -342,7 +403,11 @@ export default function LoginForm({
                   <div className="text-xs text-gray-500 mt-3 space-y-1">
                     <p>💡 Click on any payload to automatically fill the username field</p>
                     {showPayloadManager && (
-                      <p>🔧 Hover over payloads to see edit/delete options</p>
+                      <>
+                        <p>🔧 Hover over payloads to see edit/delete options</p>
+                        <p>💾 Changes are automatically saved to your browser</p>
+                        <p>🔄 Use Reset button to restore default payloads</p>
+                      </>
                     )}
                     <p className="text-cyber-purple">📊 Total payloads: {commonPayloads.length}</p>
                   </div>

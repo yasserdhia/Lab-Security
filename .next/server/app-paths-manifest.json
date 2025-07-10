@@ -1,1 +1,19 @@
-{}
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/impossible/route": "app/api/impossible/route.js",
+  "/api/health/route": "app/api/health/route.js",
+  "/api/level5/route": "app/api/level5/route.js",
+  "/api/level1/route": "app/api/level1/route.js",
+  "/api/level3/route": "app/api/level3/route.js",
+  "/api/level2/route": "app/api/level2/route.js",
+  "/api/level6/route": "app/api/level6/route.js",
+  "/api/level4/route": "app/api/level4/route.js",
+  "/impossible/page": "app/impossible/page.js",
+  "/level1/page": "app/level1/page.js",
+  "/level2/page": "app/level2/page.js",
+  "/level4/page": "app/level4/page.js",
+  "/level3/page": "app/level3/page.js",
+  "/level5/page": "app/level5/page.js",
+  "/level6/page": "app/level6/page.js",
+  "/page": "app/page.js"
+}
