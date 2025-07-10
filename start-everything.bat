@@ -32,7 +32,7 @@ echo    URL: http://localhost:3000
 echo    Test different SQL injection techniques
 echo.
 echo 🔧 DATABASE ADMIN (pgAdmin)
-echo    URL: http://localhost:8080
+echo    URL: http://localhost:8888
 echo    Email: admin@sqlilab.com
 echo    Password: admin123
 echo.

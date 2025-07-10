@@ -215,11 +215,79 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Impossible Level - Special Section */}
+        <section className="mt-16">
+          <h3 className="text-3xl font-bold mb-8 text-center text-green-400">
+            🔒 Maximum Security Challenge
+          </h3>
+          <div className="max-w-2xl mx-auto">
+            <Link href="/impossible">
+              <div className="bg-gradient-to-r from-green-900/50 to-emerald-900/50 border-2 border-green-400/50 rounded-lg p-8 hover:scale-105 transition-all duration-300 cursor-pointer">
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-4">
+                    <span className="text-4xl font-bold text-green-400 mr-4">
+                      Impossible Level
+                    </span>
+                    <span className="bg-green-400 text-black px-3 py-1 rounded-full text-sm font-bold">
+                      SECURE
+                    </span>
+                  </div>
+                  
+                  <h4 className="text-xl font-semibold mb-4 text-white">
+                    Maximum Protection Implementation
+                  </h4>
+                  
+                  <p className="text-gray-300 mb-6 leading-relaxed">
+                    Experience a completely secure implementation that demonstrates industry best practices. 
+                    This level is immune to all SQL injection attacks and shows how to properly defend 
+                    against vulnerabilities while maintaining functionality.
+                  </p>
+                  
+                  <div className="grid md:grid-cols-2 gap-4 mb-6">
+                    <div className="bg-green-800/30 rounded-lg p-4">
+                      <h5 className="font-semibold text-green-300 mb-2">🛡️ Security Features</h5>
+                      <ul className="text-sm text-gray-300 space-y-1">
+                        <li>• Parameterized Queries</li>
+                        <li>• Input Validation & Sanitization</li>
+                        <li>• Secure Authentication</li>
+                        <li>• Generic Error Messages</li>
+                      </ul>
+                    </div>
+                    <div className="bg-green-800/30 rounded-lg p-4">
+                      <h5 className="font-semibold text-green-300 mb-2">⚡ No Limitations</h5>
+                      <ul className="text-sm text-gray-300 space-y-1">
+                        <li>• No Rate Limiting</li>
+                        <li>• Unlimited Requests</li>
+                        <li>• Full Functionality</li>
+                        <li>• Production Ready</li>
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  <div className="text-green-400 font-mono text-sm">
+                    Challenge: Try ANY SQL injection attack - they will all fail!
+                  </div>
+                  
+                  <div className="mt-6">
+                    <span className="text-green-400 font-semibold">
+                      Click to test the unbreakable implementation →
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </section>
+
         {/* Statistics Section */}
-        <section className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <section className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="text-center p-6 bg-cyber-blue/10 rounded-lg border border-cyber-blue/30">
             <div className="text-3xl font-bold text-cyber-blue mb-2">8</div>
-            <div className="text-gray-400">Vulnerability Levels</div>
+            <div className="text-gray-400">Vulnerable Levels</div>
+          </div>
+          <div className="text-center p-6 bg-green-500/10 rounded-lg border border-green-500/30">
+            <div className="text-3xl font-bold text-green-400 mb-2">1</div>
+            <div className="text-gray-400">Secure Level</div>
           </div>
           <div className="text-center p-6 bg-cyber-green/10 rounded-lg border border-cyber-green/30">
             <div className="text-3xl font-bold text-cyber-green mb-2">25+</div>

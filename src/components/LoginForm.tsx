@@ -55,7 +55,8 @@ export default function LoginForm({
     "' OR username='admin' --",
     "1' OR '1'='1",
     "'; DROP TABLE users; --",
-    "' OR SLEEP(5) --"
+    "' OR SLEEP(5) --",
+    "' UNION SELECT 1, table_name, null, null, null, null FROM information_schema.tables WHERE table_schema='public' LIMIT 1 OFFSET 0--",
   ];
 
   return (

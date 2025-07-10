@@ -26,7 +26,7 @@ echo    URL: http://localhost:3000
 echo    Access the SQL injection challenges
 echo.
 echo 🔧 DATABASE ADMINISTRATION (pgAdmin)
-echo    URL: http://localhost:8080
+echo    URL: http://localhost:8888
 echo    Email: admin@sqlilab.com
 echo    Password: admin123
 echo.

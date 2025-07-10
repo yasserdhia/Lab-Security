@@ -2,7 +2,7 @@
 
 ## 🔧 pgAdmin Access
 
-**pgAdmin Web Interface**: http://localhost:8080
+**pgAdmin Web Interface**: http://localhost:8888
 
 ### Login Credentials
 - **Email**: admin@sqlilab.com

@@ -1,0 +1,27 @@
+=============================================== 
+  SQLMap Attack Report - Level 1 Analysis 
+=============================================== 
+Date: Tue 07/08/2025 12:11:44.90 
+Target: http://localhost:3000/api/level1 
+Attack Type: POST JSON SQL Injection 
+Database: PostgreSQL 
+ 
+🎯 Vulnerability Details: 
+- Type: String-based SQL Injection 
+- Location: username and password parameters 
+- Method: Direct string concatenation 
+- Risk Level: HIGH 
+ 
+📊 Discovered Information: 
+- Database: sqli_lab 
+- Main Table: users 
+- Columns: id, username, email, first_name, last_name, role, password 
+- Records: Multiple user accounts extracted 
+ 
+🛡️ Security Recommendations: 
+1. Use parameterized queries/prepared statements 
+2. Implement input validation and sanitization 
+3. Use principle of least privilege for DB user 
+4. Implement WAF (Web Application Firewall) 
+5. Add rate limiting to prevent automated attacks 
+ 
