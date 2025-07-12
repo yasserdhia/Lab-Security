@@ -1,11 +1,8 @@
 -- SQL Injection Lab Database Schema
 -- This database contains intentionally vulnerable tables for educational purposes
 
--- Create database (if not exists)
-CREATE DATABASE IF NOT EXISTS sqli_lab;
-
--- Use the database
-\c sqli_lab;
+-- Use the database (database is created automatically by Docker)
+-- CREATE DATABASE sqli_lab; -- This is handled by Docker environment
 
 -- Create users table with various vulnerability scenarios
 CREATE TABLE IF NOT EXISTS users (
@@ -77,11 +74,11 @@ CREATE TABLE IF NOT EXISTS comments (
 
 -- Insert admin user (password: admin123)
 INSERT INTO users (username, email, password, first_name, last_name, role, salary, social_security, credit_card) VALUES
-('admin', 'admin@sqlilab.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'User', 'admin', 100000.00, '123-45-6789', '4532-1234-5678-9012'),
-('john_doe', 'john@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'John', 'Doe', 'user', 75000.00, '987-65-4321', '4532-9876-5432-1098'),
-('jane_smith', 'jane@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Jane', 'Smith', 'user', 85000.00, '456-78-9123', '4532-5555-4444-3333'),
-('bob_wilson', 'bob@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Bob', 'Wilson', 'user', 65000.00, '789-12-3456', '4532-1111-2222-3333'),
-('alice_brown', 'alice@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Alice', 'Brown', 'manager', 95000.00, '321-54-9876', '4532-7777-8888-9999');
+('admin', 'admin@sqlilab.com', '$2a$12$DInwEC5yFJ94winC3j7vI.EoVfTpz9XaqkJbvTAJ.EmgBA2Waar1i', 'Admin', 'User', 'admin', 100000.00, '123-45-6789', '4532-1234-5678-9012'),
+('john_doe', 'john@example.com', '$2a$12$Rz0lIN2XFayC5zHB9B5gfeqoJ7sLbk/O2zXx1S1a6JYqMYRcnJVe.', 'John', 'Doe', 'user', 75000.00, '987-65-4321', '4532-9876-5432-1098'),
+('jane_smith', 'jane@example.com', '$2a$12$rdUZ3dGh75hyPQ7iFRT2Z.75c0g.xpfFlQdHp2g7p7LV9JAP8a8g6', 'Jane', 'Smith', 'user', 85000.00, '456-78-9123', '4532-5555-4444-3333'),
+('bob_wilson', 'bob@example.com', '$2a$12$pBJ1u/6YK73m0bP5XqRdG.gLeZnkFPYcZ84VcwzYrI39k0R9FWeLy', 'Bob', 'Wilson', 'user', 65000.00, '789-12-3456', '4532-1111-2222-3333'),
+('alice_brown', 'alice@example.com', '$2a$12$1.owB2r/CDiTC54IoEvQMOgzJ7d35LoAJLCXUQPQU06WHb2SGanea', 'Alice', 'Brown', 'manager', 95000.00, '321-54-9876', '4532-7777-8888-9999');
 
 -- Insert sample products
 INSERT INTO products (name, description, price, category, stock_quantity) VALUES

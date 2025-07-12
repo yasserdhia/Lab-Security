@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import pool from '@/lib/db';
 
 export async function POST(request: NextRequest) {
@@ -14,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     // INTENTIONALLY VULNERABLE: Direct string concatenation
     // This is the vulnerability that students need to exploit
-    const vulnerableQuery = `SELECT id, username, email, first_name, last_name, role FROM users WHERE username = '${username}' AND password = '${password}'`;
+    const vulnerableQuery = `SELECT id, username, email, first_name, last_name, role, password FROM users WHERE username = '${username}'`;
 
     console.log('Executing query:', vulnerableQuery); // For educational purposes
 
@@ -28,16 +29,31 @@ export async function POST(request: NextRequest) {
       
       if (result.rows.length > 0) {
         const user = result.rows[0];
-        return NextResponse.json({
-          success: true,
-          message: 'Login successful! You have bypassed the authentication.',
-          data: {
-            user: user,
-            query: vulnerableQuery, // Show the executed query for educational purposes
-            vulnerability: 'String-based SQL Injection',
-            impact: 'Authentication bypass, potential data exposure'
-          }
-        });
+        
+        // Check password with bcrypt (but still vulnerable to SQL injection in username)
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        
+        if (isValidPassword) {
+          return NextResponse.json({
+            success: true,
+            message: 'Login successful! You have bypassed the authentication.',
+            data: {
+              user: { ...user, password: undefined }, // Don't return password hash
+              query: vulnerableQuery, // Show the executed query for educational purposes
+              vulnerability: 'String-based SQL Injection',
+              impact: 'Authentication bypass, potential data exposure'
+            }
+          });
+        } else {
+          return NextResponse.json({
+            success: false,
+            message: 'Invalid credentials. Try a different approach.',
+            data: {
+              query: vulnerableQuery,
+              hint: 'The query executed successfully but password verification failed. Try manipulating the WHERE clause to bypass authentication.'
+            }
+          });
+        }
       } else {
         return NextResponse.json({
           success: false,

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import pool from '@/lib/db';
 
 export async function POST(request: NextRequest) {
@@ -13,8 +14,8 @@ export async function POST(request: NextRequest) {
     }
 
     // INTENTIONALLY VULNERABLE: Perfect for UNION attacks
-    // This query selects 5 columns, making it ideal for UNION SELECT demonstrations
-    const vulnerableQuery = `SELECT id, username, email, role, created_at FROM users WHERE username = '${username}' AND password = '${password}'`;
+    // This query selects 6 columns, making it ideal for UNION SELECT demonstrations
+    const vulnerableQuery = `SELECT id, username, email, role, created_at, password FROM users WHERE username = '${username}'`;
 
     console.log('Executing query:', vulnerableQuery);
 
@@ -28,23 +29,44 @@ export async function POST(request: NextRequest) {
       
       if (result.rows.length > 0) {
         const users = result.rows;
-        return NextResponse.json({
-          success: true,
-          message: 'UNION injection successful! You have extracted data from the database.',
-          data: {
-            extracted_data: users,
-            query: vulnerableQuery,
-            vulnerability: 'Union-based SQL Injection',
-            impact: 'Complete data extraction from any table in the database',
-            columns_revealed: ['id', 'username', 'email', 'role', 'created_at'],
-            next_steps: [
-              'Try extracting from other tables',
-              'Get database schema information',
-              'Extract password hashes',
-              'Enumerate database users and permissions'
-            ]
+        
+        // Check password with bcrypt for each user
+        let validUser = null;
+        for (const user of users) {
+          if (await bcrypt.compare(password, user.password)) {
+            validUser = user;
+            break;
           }
-        });
+        }
+        
+        if (validUser) {
+          return NextResponse.json({
+            success: true,
+            message: 'UNION injection successful! You have extracted data from the database.',
+            data: {
+              extracted_data: { ...validUser, password: undefined },
+              query: vulnerableQuery,
+              vulnerability: 'Union-based SQL Injection',
+              impact: 'Complete data extraction from any table in the database',
+              columns_revealed: ['id', 'username', 'email', 'role', 'created_at', 'password'],
+              next_steps: [
+                'Try extracting from other tables',
+                'Get database schema information',
+                'Extract password hashes',
+                'Enumerate database users and permissions'
+              ]
+            }
+          });
+        } else {
+          return NextResponse.json({
+            success: false,
+            message: 'User found but password verification failed. Try manipulating the query.',
+            data: {
+              query: vulnerableQuery,
+              hint: 'Try UNION SELECT to extract data or bypass authentication'
+            }
+          });
+        }
       } else {
         return NextResponse.json({
           success: false,

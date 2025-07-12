@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import pool from '@/lib/db';
 
 export async function POST(request: NextRequest) {
@@ -12,14 +13,40 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // INTENTIONALLY VULNERABLE: Second-order injection
-    // First, store the potentially malicious data
+    // First, try normal authentication with bcrypt
     try {
       // Test basic connection first
       await pool.query('SELECT 1');
       console.log('Database connection test successful');
       
-      // Store user input (first order)
+      // INTENTIONALLY VULNERABLE: Username is still injectable
+      const userQuery = `SELECT * FROM users WHERE username = '${username}'`;
+      console.log('User query:', userQuery);
+      
+      const userResult = await pool.query(userQuery);
+      
+      if (userResult.rows.length > 0) {
+        const user = userResult.rows[0];
+        
+        // Check password with bcrypt
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        
+        if (isValidPassword) {
+          return NextResponse.json({
+            success: true,
+            message: 'Login successful! Valid credentials.',
+            data: {
+              user: { ...user, password: undefined }, // Don't return password hash
+              query: userQuery,
+              vulnerability: 'Username still injectable despite password protection',
+              impact: 'Authentication bypass through username manipulation'
+            }
+          });
+        }
+      }
+      
+      // INTENTIONALLY VULNERABLE: Second-order injection
+      // Store the potentially malicious data for later use
       const insertQuery = `INSERT INTO logs (user_id, action, details) VALUES (1, 'login_attempt', '{"username": "${username}", "password": "${password}"}')`;
       await pool.query(insertQuery);
 

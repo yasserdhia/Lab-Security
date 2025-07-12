@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import pool from '@/lib/db';
 
 export async function POST(request: NextRequest) {
@@ -14,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     // INTENTIONALLY VULNERABLE: Blind Boolean Injection
     // This endpoint only returns true/false responses, no data or error details
-    const vulnerableQuery = `SELECT COUNT(*) FROM users WHERE username = '${username}' AND password = '${password}'`;
+    const vulnerableQuery = `SELECT id, username, password FROM users WHERE username = '${username}'`;
 
     console.log('Executing query:', vulnerableQuery);
 
@@ -25,21 +26,37 @@ export async function POST(request: NextRequest) {
       
       const result = await pool.query(vulnerableQuery);
       console.log('Query result:', result.rows);
-      const count = parseInt(result.rows[0].count);
       
-      if (count > 0) {
-        // True condition - user found
-        return NextResponse.json({
-          success: true,
-          message: 'Login successful',
-          response_pattern: 'TRUE_CONDITION',
-          debug_info: {
-            note: 'In blind injection, you only get this type of response pattern',
-            query: vulnerableQuery,
-            technique: 'Boolean-based blind SQL injection',
-            hint: 'Look for consistent differences between true and false conditions'
-          }
-        });
+      if (result.rows.length > 0) {
+        const user = result.rows[0];
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        
+        if (isValidPassword) {
+          // True condition - user found
+          return NextResponse.json({
+            success: true,
+            message: 'Login successful',
+            response_pattern: 'TRUE_CONDITION',
+            debug_info: {
+              note: 'In blind injection, you only get this type of response pattern',
+              query: vulnerableQuery,
+              technique: 'Boolean-based blind SQL injection',
+              hint: 'Look for consistent differences between true and false conditions'
+            }
+          });
+        } else {
+          // Password invalid but user exists
+          return NextResponse.json({
+            success: false,
+            message: 'Login failed',
+            response_pattern: 'FALSE_CONDITION',
+            debug_info: {
+              note: 'Password verification failed',
+              query: vulnerableQuery,
+              hint: 'Try bypassing the WHERE clause entirely'
+            }
+          });
+        }
       } else {
         // False condition - no user found or query returned false
         return NextResponse.json({

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import pool from '@/lib/db';
 
 export async function POST(request: NextRequest) {
@@ -19,10 +20,10 @@ export async function POST(request: NextRequest) {
     // If username is numeric, treat as ID
     if (!isNaN(Number(username))) {
       const userId = username;
-      vulnerableQuery = `SELECT id, username, email, first_name, last_name, role FROM users WHERE id = ${userId} AND password = '${password}'`;
+      vulnerableQuery = `SELECT id, username, email, first_name, last_name, role, password FROM users WHERE id = ${userId}`;
     } else {
       // If username is string, also allow username-based login for convenience
-      vulnerableQuery = `SELECT id, username, email, first_name, last_name, role FROM users WHERE username = '${username}' AND password = '${password}'`;
+      vulnerableQuery = `SELECT id, username, email, first_name, last_name, role, password FROM users WHERE username = '${username}'`;
     }
 
     console.log('Executing query:', vulnerableQuery);
@@ -37,17 +38,38 @@ export async function POST(request: NextRequest) {
       
       if (result.rows.length > 0) {
         const users = result.rows;
-        return NextResponse.json({
-          success: true,
-          message: 'Numeric injection successful! You have accessed user data.',
-          data: {
-            users: users,
-            query: vulnerableQuery,
-            vulnerability: 'Numeric SQL Injection',
-            impact: 'Data exposure, authentication bypass via numeric manipulation',
-            tip: 'Notice how you can access multiple users with UNION SELECT or OR conditions'
+        
+        // Check password with bcrypt for each user
+        let validUser = null;
+        for (const user of users) {
+          if (await bcrypt.compare(password, user.password)) {
+            validUser = user;
+            break;
           }
-        });
+        }
+        
+        if (validUser) {
+          return NextResponse.json({
+            success: true,
+            message: 'Numeric injection successful! You have accessed user data.',
+            data: {
+              user: { ...validUser, password: undefined },
+              query: vulnerableQuery,
+              vulnerability: 'Numeric SQL Injection',
+              impact: 'Data exposure, authentication bypass via numeric manipulation',
+              tip: 'Notice how you can access multiple users with UNION SELECT or OR conditions'
+            }
+          });
+        } else {
+          return NextResponse.json({
+            success: false,
+            message: 'Invalid credentials. Try a different approach.',
+            data: {
+              query: vulnerableQuery,
+              hint: 'User found but password verification failed. Try manipulating the query to bypass authentication.'
+            }
+          });
+        }
       } else {
         return NextResponse.json({
           success: false,

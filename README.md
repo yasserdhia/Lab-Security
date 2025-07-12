@@ -46,6 +46,28 @@ This project is designed **exclusively for educational and authorized penetratio
     └── Easy deployment
 ```
 
+## 🔐 Security Implementation
+
+### Password Security
+- **All password authentication uses bcrypt hashing** for secure password storage
+- **Valid login credentials are required** for all levels (SQL injection is in username field)
+- **Strong encryption** protects user passwords even when database is compromised
+- **Educational Focus**: Learn SQL injection without compromising password security
+
+### Default Credentials
+| Username | Password | Role |
+|----------|----------|------|
+| admin | admin123 | Administrator |
+| john_doe | password123 | User |
+| jane_smith | password123 | User |
+| bob_wilson | password123 | User |
+| alice_brown | password123 | Manager |
+
+### Authentication Flow
+1. **Username**: Intentionally vulnerable to SQL injection (for learning)
+2. **Password**: Secured with bcrypt - cannot be bypassed through SQL injection
+3. **Result**: Realistic authentication system with educational vulnerabilities
+
 ## 📚 Vulnerability Levels
 
 ### Level 1: Basic String Injection 🟢
